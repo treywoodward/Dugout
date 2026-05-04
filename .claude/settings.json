@@ -5,7 +5,10 @@
       "Bash(pnpm tsc *)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(git -C /Users/treywoodward/Dugout add app/games/[id]/track/page.tsx)",
-      "Bash(git -C /Users/treywoodward/Dugout commit -m ' *)"
+      "Bash(git -C /Users/treywoodward/Dugout commit -m ' *)",
+      "Bash(git -C /Users/treywoodward/Dugout push)",
+      "Bash(git -C /Users/treywoodward/Dugout add supabase-schema.sql .env.local.example)",
+      "Bash(git -C /Users/treywoodward/Dugout add -A)"
     ]
   }
 }
