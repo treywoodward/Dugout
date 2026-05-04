@@ -1,0 +1,184 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { LogOut, BarChart3, Users, Zap } from 'lucide-react'
+
+export default function HomePage() {
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+    getUser()
+  }, [])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center p-4">
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">Dugout</h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Real-time game tracking & coaching analytics
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-4xl">
+          <Card>
+            <CardHeader>
+              <Zap className="w-8 h-8 text-blue-600 mb-2" />
+              <CardTitle>Live Tracking</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Track every pitch, hit, and play in real-time with an intuitive mobile interface
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <BarChart3 className="w-8 h-8 text-indigo-600 mb-2" />
+              <CardTitle>Analytics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Get instant statistics on batting averages, OPS, ERA, and more
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <Users className="w-8 h-8 text-purple-600 mb-2" />
+              <CardTitle>Team Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Manage rosters, create lineups, and build teams with drag-and-drop ease
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="flex gap-4">
+          <Link href="/auth/sign-up">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              Get Started
+            </Button>
+          </Link>
+          <Link href="/auth/login">
+            <Button size="lg" variant="outline">
+              Sign In
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Dugout</h1>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-600">{user.email}</span>
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold mb-4">Welcome to Dugout</h2>
+          <p className="text-gray-600 mb-8">
+            Your comprehensive platform for tracking baseball games and analyzing player performance
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <Link href="/dashboard">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <BarChart3 className="w-8 h-8 text-indigo-600 mb-2" />
+                <CardTitle>Dashboard</CardTitle>
+                <CardDescription>View teams, games, and statistics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">
+                  Access your team statistics, recent games, and player performance metrics
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/teams">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <Users className="w-8 h-8 text-blue-600 mb-2" />
+                <CardTitle>Teams</CardTitle>
+                <CardDescription>Manage your teams and rosters</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">
+                  Create teams, manage players, and organize your leagues
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/games">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <Zap className="w-8 h-8 text-amber-600 mb-2" />
+                <CardTitle>Games</CardTitle>
+                <CardDescription>Track and manage games</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">
+                  View upcoming games, track live games, and review past performances
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <BarChart3 className="w-8 h-8 text-green-600 mb-2" />
+                <CardTitle>Analytics</CardTitle>
+                <CardDescription>Deep dive into statistics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">
+                  Analyze trends, compare players, and get coaching insights
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </main>
+    </div>
+  )
+}
