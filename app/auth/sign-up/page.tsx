@@ -1,124 +1,131 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export default function Page() {
+export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [repeatPassword, setRepeatPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
-    setIsLoading(true)
-    setError(null)
-
-    if (password !== repeatPassword) {
+    if (password !== confirm) {
       setError('Passwords do not match')
-      setIsLoading(false)
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
       return
     }
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ??
-            `${window.location.origin}/auth/callback`,
-        },
-      })
-      if (error) throw error
+    setLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+    } else {
       router.push('/auth/sign-up-success')
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
-    } finally {
-      setIsLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Sign up</CardTitle>
-              <CardDescription>Create a new account</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSignUp}>
-                <div className="flex flex-col gap-6">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="repeat-password">Repeat Password</Label>
-                    </div>
-                    <Input
-                      id="repeat-password"
-                      type="password"
-                      required
-                      value={repeatPassword}
-                      onChange={(e) => setRepeatPassword(e.target.value)}
-                    />
-                  </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating an account...' : 'Sign up'}
-                  </Button>
-                </div>
-                <div className="mt-4 text-center text-sm">
-                  Already have an account?{' '}
-                  <Link
-                    href="/auth/login"
-                    className="underline underline-offset-4"
-                  >
-                    Login
-                  </Link>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-6">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Logo */}
+        <div className="text-center space-y-2">
+          <div className="text-5xl">⚾</div>
+          <h1 className="text-3xl font-black text-white tracking-tight">Dugout</h1>
+          <p className="text-slate-400 text-sm">Create your account</p>
         </div>
+
+        {/* Form */}
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-300" htmlFor="email">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="h-12 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-green-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-300" htmlFor="password">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="new-password"
+              required
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="h-12 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-green-500"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-300" htmlFor="confirm">
+              Confirm Password
+            </label>
+            <Input
+              id="confirm"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="new-password"
+              required
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              className="h-12 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-green-500"
+            />
+          </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full h-12 bg-green-500 hover:bg-green-400 active:scale-95 disabled:opacity-50 text-white font-bold text-base rounded-xl transition-all"
+          >
+            {loading ? 'Creating account…' : 'Create Account'}
+          </button>
+        </form>
+
+        <p className="text-center text-slate-500 text-sm">
+          Already have an account?{' '}
+          <Link href="/auth/login" className="text-green-400 hover:text-green-300 font-semibold">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   )
