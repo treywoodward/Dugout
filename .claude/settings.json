@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C /Users/treywoodward/Dugout status)"
+      "Bash(git -C /Users/treywoodward/Dugout status)",
+      "Bash(pnpm tsc *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(git -C /Users/treywoodward/Dugout add app/games/[id]/track/page.tsx)",
+      "Bash(git -C /Users/treywoodward/Dugout commit -m ' *)"
     ]
   }
 }
