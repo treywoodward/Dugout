@@ -2,10 +2,20 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Never intercept Next.js internal routes or static files
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    /\.(?:ico|png|jpg|jpeg|svg|webp|gif|css|js|woff2?)$/.test(pathname)
+  ) {
+    return NextResponse.next({ request })
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  const { pathname } = request.nextUrl
   const isPublic = pathname === '/' || pathname.startsWith('/auth/')
 
   // If env vars are missing, skip auth entirely and allow public routes
