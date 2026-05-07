@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/client'
 import { Input } from '@/components/ui/input'
