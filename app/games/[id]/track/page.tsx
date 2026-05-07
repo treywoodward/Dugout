@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { getTeamPlayers, recordAtBat } from '@/lib/db-utils'
 import { cn } from '@/lib/utils'
 import { Shield, Users, ChevronRight, X, ChevronDown } from 'lucide-react'
+import { EventCelebration, type EventType } from '@/components/event-celebration'
 
 type Player = { id: string; name: string; jersey_number?: number }
 type Mode = 'batting' | 'fielding'
@@ -205,6 +206,7 @@ export default function GameTrackerPage() {
   const [flashMsg, setFlashMsg] = useState<string | null>(null)
   const [outFlash, setOutFlash] = useState(false)
   const [halfOver, setHalfOver] = useState(false)
+  const [celebration, setCelebration] = useState<EventType>(null)
 
   useEffect(() => {
     async function load() {
@@ -289,6 +291,10 @@ export default function GameTrackerPage() {
     else if (type === 'double') setBases(b => ({ ...b, second: true }))
     else if (type === 'triple') setBases(b => ({ ...b, third: true }))
     else if (type === 'home_run') setBases({ first: false, second: false, third: false })
+
+    // Trigger celebration for key events
+    const celebrateTypes: ResultType[] = ['home_run', 'strikeout', 'triple', 'double']
+    if (celebrateTypes.includes(type)) setCelebration(type as EventType)
 
     if (isOut) addOut()
     nextBatter()
@@ -434,6 +440,7 @@ export default function GameTrackerPage() {
   // Main tracker
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      <EventCelebration event={celebration} onDone={() => setCelebration(null)} />
       {/* Scoreboard */}
       <header className="bg-slate-950 text-white sticky top-0 z-30">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
