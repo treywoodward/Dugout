@@ -15,10 +15,16 @@ export default function HomePage() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
+        const timeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 5000)
+        )
+        const { data: { user } } = await Promise.race([
+          supabase.auth.getUser(),
+          timeout,
+        ])
         setUser(user)
       } catch {
-        // auth unavailable — show unauthenticated UI
+        // auth unavailable or timed out — show unauthenticated UI
       } finally {
         setLoading(false)
       }
