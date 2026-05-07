@@ -14,9 +14,14 @@ export default function HomePage() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch {
+        // auth unavailable — show unauthenticated UI
+      } finally {
+        setLoading(false)
+      }
     }
     getUser()
   }, [])
@@ -163,16 +168,31 @@ export default function HomePage() {
             </Card>
           </Link>
 
+          <Link href="/lineup">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <CardHeader>
+                <BarChart3 className="w-8 h-8 text-purple-600 mb-2" />
+                <CardTitle>Lineup Builder</CardTitle>
+                <CardDescription>Drag-and-drop batting order</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">
+                  Build optimal lineups based on OBP and stats, assign positions, auto-sort by performance
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href="/analytics">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
               <CardHeader>
                 <BarChart3 className="w-8 h-8 text-green-600 mb-2" />
-                <CardTitle>Analytics</CardTitle>
-                <CardDescription>Deep dive into statistics</CardDescription>
+                <CardTitle>Analytics + AI</CardTitle>
+                <CardDescription>Stats & AI coaching insights</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600">
-                  Analyze trends, compare players, and get coaching insights
+                  Analyze trends, opponent history, and get AI-powered coaching recommendations
                 </p>
               </CardContent>
             </Card>

@@ -15,8 +15,12 @@ export function Navbar() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch {
+        // auth unavailable — stay unauthenticated
+      }
     }
     getUser()
   }, [supabase.auth])
@@ -49,6 +53,9 @@ export function Navbar() {
             <Link href="/games">
               <Button variant="ghost" size="sm">Games</Button>
             </Link>
+            <Link href="/lineup">
+              <Button variant="ghost" size="sm">Lineup</Button>
+            </Link>
             <Link href="/analytics">
               <Button variant="ghost" size="sm">Analytics</Button>
             </Link>
@@ -70,6 +77,9 @@ export function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/games">Games</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/lineup">Lineup Builder</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/analytics">Analytics</Link>
